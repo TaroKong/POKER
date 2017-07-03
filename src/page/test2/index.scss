@@ -1,0 +1,153 @@
+@import "../../common/css/_mixins.scss";
+@import "../../common/css/_grid.scss";
+@import "../../common/css/_variable.scss";
+
+$red: #de373e;
+
+.main-container {
+  min-height: 100%;
+  padding-bottom: 1.2rem;
+  @extend %clearfix;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+}
+
+.nav {
+  width: 3rem;
+  height: 100%;
+  float: left;
+
+  &-wrap {
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  &-item {
+    position: relative;
+    width: 100%;
+    line-height: 1.6rem;
+    text-align: center;
+    color: $TEXTCOLOR_NORMAL;
+    font-size: .42rem;
+    background: #f2f2f2;
+    @extend %text-overflow;
+    &:before {
+      position: absolute;
+      content: "";
+      height: 0;
+      right: 0; left: 0;
+      bottom: 0;
+      border-bottom: 1px solid #cccccc;
+      transform: scale(1,.5);
+      transform-origin: center bottom;
+    }
+    @include pseudo-border(right, 1px, #cccccc);
+    &.cur {
+      background: #fff;
+      color: $red;
+      &:after {
+        border-right: none;
+      }
+    }
+  }
+}
+
+.subcat {
+  box-sizing: border-box;
+  padding-left: 3rem;
+  height: 100%;
+  background: #fff;
+
+  &-wrap {
+    height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    display: none;
+    &.is-opened {
+      display: block;
+    }
+  }
+
+  &-list {
+    padding-left: .3rem;
+  }
+
+  &-header {
+    position: relative;
+    height: 1.6rem;
+    line-height: 1.6rem;
+    font-size: .42rem;
+    color: $TEXTCOLOR_NORMAL;
+    &:before {
+      content: "";
+      display: inline-block;
+      width: .06rem;
+      height: .4rem;
+      margin-right: .2rem;
+      background: $red;
+    }
+    @include pseudo-border(bottom, 1px, #cccccc);
+  }
+
+  &-item {
+    display: block;
+    padding: .49rem .6rem .51rem .2rem;
+    position: relative;
+    @include pseudo-border(bottom, 1px, #cccccc);
+  }
+
+  &-title {
+    color: $TEXTCOLOR_NORMAL;
+    font-size: .42rem;
+    margin-bottom: .09rem;
+  }
+
+  &-intro {
+    color: $TEXTCOLOR_WEAK;
+    font-size: .3rem;
+  }
+}
+
+div {
+  background: url('/slice/test2/2.png') no-repeat 0 0;
+}
+
+p {
+  background: url('/slice/test2/img.png') no-repeat 0 0;
+}
+
+div {
+  background: url('/slice/2.png') no-repeat 0 0;
+}
+
+p {
+  background: url('/slice/img.png') no-repeat 0 0;
+}
+
+div {
+  background: url('/slice/test2/index/2.png') no-repeat 0 0;
+}
+
+p {
+  background: url('/slice/test2/index/img.png') no-repeat 0 0;
+}
+p {
+  background: url('/slice/test2/index/index2/img.png') no-repeat 0 0;
+}
+p {
+  background: url('/slice/test2/index/index2/index3/img.png') no-repeat 0 0;
+}
+p {
+  background: url('/slice/test2/index/index2/index3/index4/img.png') no-repeat 0 0;
+}
+
+p {
+  background: resolve('./img/img.png');
+}

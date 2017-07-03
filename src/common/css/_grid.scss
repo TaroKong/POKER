@@ -1,0 +1,43 @@
+$grid: 4px;
+
+%font-18 {
+  font-size: 18px;
+  line-height: 5.5 * $grid;
+}
+%font-16 {
+  font-size: 16px;
+  line-height: 5 * $grid;
+}
+%font-14 {
+  font-size: 14px;
+  line-height: 4 * $grid;
+}
+%font-12 {
+  font-size: 12px;
+  line-height: 4 * $grid;
+}
+%font-11 {
+  font-size: 11px;
+  line-height: 3.5 * $grid;
+}
+
+%para-18 {
+  font-size: 18px;
+  line-height: 6.5 * $grid;
+}
+%para-16 {
+  font-size: 16px;
+  line-height: 6 * $grid;
+}
+%para-14 {
+  font-size: 14px;
+  line-height: 5.5 * $grid;
+}
+%para-12 {
+  font-size: 12px;
+  line-height: 5 * $grid;
+}
+%para-11 {
+  font-size: 11px;
+  line-height: 4.5 * $grid;
+}

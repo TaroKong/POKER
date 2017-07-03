@@ -7,7 +7,9 @@ const runSequence = require('run-sequence');
 gulp.task('build', (cb) => {
   runSequence(
     'webpack:build',
-    'html:build',
+    'styles:build',
+    // ['sprites:build'],
+    'html',
     cb
   );
 });

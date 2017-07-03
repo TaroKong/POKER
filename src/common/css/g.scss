@@ -1,0 +1,228 @@
+@import "./_reset.scss";
+@import "./_mixins.scss";
+@import "./_grid.scss";
+@import "./_variable.scss";
+
+.top-notice{
+  color:#ba9c6d;
+  background-color:#fffbea;
+  padding:8px 12px;
+  .ico-info{
+    width:15px;
+    height:15px;
+    display:inline-block;
+    vertical-align:text-bottom;
+    margin-right: 6px;
+    @include base64('slice/com/icon-info.png');
+    background-size:cover;
+  }
+}
+
+.mod-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  @include pseudo-border(top, 1px, #cccccc);
+  box-shadow: 0 -2px 4px 0 rgba(0, 0, 0, 0.1);
+
+  &-item {
+    float: left;
+    width: 33.33%;
+    height: 1.2rem;
+    line-height: 1.2rem;
+    text-align: center;
+    font-size: .42rem;
+    background: #fff;
+    color: $TEXTCOLOR_NORMAL;
+    border-right: 1px solid #ccc;
+
+    // position: relative;
+    // @include pseudo-border(right, 1px, #cccccc);
+    // &:last-child:after {
+    //   border-right: none;
+    // }
+    &:last-child {
+      border-right: none;
+    }
+    &.cur {
+      color: #de373e;
+    }
+
+    &:before {
+      content: "";
+      display: inline-block;
+      vertical-align: middle;
+      background-size: contain;
+      margin-right: .3rem;
+      margin-top: -.1rem;
+    }
+
+    &.mod-nav-home:before {
+      width: .5rem;
+      height: .45rem;
+      @include base64("slice/com/nav-home.png");
+    }
+    &.mod-nav-home.cur:before {
+      @include base64("slice/com/nav-home-cur.png");
+    }
+
+    &.mod-nav-cat:before {
+      width: .42rem;
+      height: .42rem;
+      @include base64("slice/com/nav-cat.png");
+    }
+    &.mod-nav-cat.cur:before {
+      @include base64("slice/com/nav-cat-cur.png");
+    }
+
+    &.mod-nav-mine:before {
+      width: .42rem;
+      height: .44rem;
+      @include base64("slice/com/nav-mine.png");
+    }
+    &.mod-nav-mine.cur:before {
+      @include base64("slice/com/nav-mine-cur.png");
+    }
+  }
+}
+
+.mod-footer {
+  background: #f2f2f2;
+
+  &.fixed {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+
+  &-acc {
+    @extend %font-11;
+    color: #878787;
+    text-align: center;
+    padding: 0 12px;
+  }
+
+  &-accinfo {
+    padding: 10px 0;
+    position: relative;
+    &:after {
+      content: "";
+      position: absolute;
+      height: 1px;
+      width: 100%;
+      background: #e3e3e3;
+      left: 0;
+      bottom: -1px;
+      transform: scaleY(0.5);
+      transform-origin: 0 0;
+    }
+    p, a {
+      display: inline-block;
+      vertical-align: middle;
+    }
+    a {
+      color: $GREEN;
+      margin-left: 10px;
+    }
+  }
+
+  &-copyright {
+    @extend %font-11;
+    text-align: center;
+    color: #adb6b3;
+    padding: 12px 0;
+  }
+
+  &.pad-bot {
+    padding-bottom: 50px;
+  }
+}
+
+.mod-popup-notice {
+  position: fixed;
+  z-index: 1000;
+  width: 175px;
+  padding: 20px 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  @extend %font-16;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.mod-popup {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+
+  &-dialog {
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1001;
+    background: #fff;
+    border-radius: 4px;
+    width:83.33%;
+  }
+
+  &-body {
+    padding: .42rem .6rem;
+  }
+
+  &-msg {
+    color: $TEXTCOLOR_NORMAL;
+    font-size: .36rem;
+    line-height: 2;
+    @extend %word-break;
+  }
+
+  &-footer {
+    text-align: center;
+    padding: .2rem 0;
+    position: relative;
+    @include pseudo-border(top, 1px, #ccc);
+  }
+
+  &-btn {
+    display: inline-block;
+    color: #fff;
+    background: #1cbcb4;
+    padding: 0 1rem;
+    height: 1.2rem;
+    line-height: 1.2rem;
+    border-radius: .08rem;
+    font-size: .42rem;
+  }
+}
+
+.mod-tag {
+  font-style: normal;
+  overflow: hidden;
+  color: transparent;
+  position: relative;
+  svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    text-anchor: middle;
+    text-align: center;
+  }
+  text {
+    alignment-baseline: middle;
+    baseline-shift: -.1em;
+  }
+}

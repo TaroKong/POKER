@@ -3,20 +3,52 @@
  */
 const gulp = require('gulp');
 const path = require('path');
+const gutil = require('gulp-util');
+const through = require('through2');
 const webpack = require('webpack');
 const yargs = require('yargs');
 const cwd = process.cwd();
 
 const argv = yargs.argv;
 const ENV = ~['dev', 'test', 'build'].indexOf(argv._[0]) ? argv._[0] : 'dev';
+const [isDev, isTest, isBuild] = ['dev' === ENV, 'test' === ENV, 'build' === ENV];
 
 let srcPath = path.join(cwd, 'src');
 let destPath = path.join(cwd, ENV);
+let filePath = argv.file ? path.join(cwd, argv.file) : srcPath;
+let commonPath = path.join(srcPath, 'common');
+let destFilePath = path.join(destPath, path.relative(srcPath, filePath));
+let slicePath = path.join(srcPath, 'slice');
+let spritePath = path.join(destPath, 'sprites');
 let manifestPath = path.join(destPath, 'rev-manifest.json');
+const wpExternalModuleName = 'externalModules';
+
+const getCommonNamed = (filePath) => {
+  let named = '';
+
+  if (filePath.indexOf(commonPath) === 0) {
+    named = path.basename(path.dirname(filePath).replace(path.join(commonPath, 'js'), ''));
+  }
+
+  return named;
+};
+
+const transPath2Variable = (filePath) => {
+  return filePath.replace(new RegExp(`${path.extname(filePath)}$|\/js`, 'ig'), '').replace(/[^a-zA-Z0-9]/g, '_');
+};
 
 module.exports = {
   srcPath,
   destPath,
+  filePath,
+  destFilePath,
+  commonPath,
+  wpExternalModuleName,
+  // gulp.src 参数
+  gulpSrc: {
+    base: srcPath
+  },
+  // gulp-rev 参数
   manifest: {
     path: manifestPath,
     base: destPath,
@@ -26,7 +58,7 @@ module.exports = {
         return JSON.parse(...args);
       },
       stringify(...args) {
-        if ('dev' === ENV) {
+        if (isDev) {
           Object.keys(args[0]).forEach((key) => {
             args[0][key] = key;
           });
@@ -36,7 +68,68 @@ module.exports = {
       }
     }
   },
+  // 私有处理 external 的方法，转换 export 为全局属性或方法
+  // 最终允许 js 中 import/require 操作时不将文件打包入其中，而是外部引用
+  exteralModuleOperator: () => {
+    let cache = {};
+
+    return through.obj(
+      function transformFunction(file, enc, cb) {
+        if (file.isNull()) {
+          this.push(file);
+        } else {
+          let named = getCommonNamed(file.path);
+
+          if (named) {
+            if (!Array.isArray(cache[named])) {
+              cache[named] = [];
+            }
+
+            cache[named].push(file);
+          } else {
+            this.push(file);
+          }
+        }
+
+        cb();
+      },
+      function flushFunction(cb) {
+        const stream = this;
+
+        Object.keys(cache).forEach((named) => {
+          let newJsFile = [];
+          let variables = [];
+
+          cache[named].reduce((newJsFile, file) => {
+            let variable = transPath2Variable(path.relative(srcPath, file.path));
+
+            newJsFile.push(`import * as ${variable} from '${file.path}';\n`);
+            variables.push(variable);
+
+            return newJsFile;
+          }, newJsFile);
+
+          newJsFile.push(`window.${wpExternalModuleName} = {\n    ...window.${wpExternalModuleName},\n    ${variables.join(',\n    ')}\n};`);
+
+          newJsFile = new gutil.File({
+            cwd: cwd,
+            base: srcPath,
+            path: path.join(commonPath, 'js', `.${wpExternalModuleName}`, `${named}.js`),
+            contents: new Buffer(newJsFile.join('\n'))
+          });
+
+          stream.push(newJsFile);
+        });
+
+        cb();
+      }
+    );
+  },
+  // webpack 打包参数
   webpack: {
+    output: {
+      filename: '[name].js'
+    },
     devtool: 'source-map',
     module: {
       rules: [
@@ -46,24 +139,102 @@ module.exports = {
           use: {
             loader: 'babel-loader',
             options: {
-              presets: ['es2015', 'react']
+              presets: ['es2015', 'stage-0', 'react']
             }
           }
         }
       ]
     },
-    plugins: [
-      new webpack.optimize.UglifyJsPlugin({
+    plugins: (() => {
+      const plugins = [];
+
+      !isDev && plugins.push(new webpack.optimize.UglifyJsPlugin({
         compress: {
           dead_code: true,
           drop_console: true,
           warnings: false
         },
         sourceMap: true
-      })
+      }));
+
+      return plugins;
+    })(),
+    resolve: {
+      alias: {
+        'common': path.join(commonPath, 'js')
+      }
+    },
+    externals: [
+      function (context, request, cb) {
+        /**
+         * 可以使用外部引用的条件
+         * 1. request 的是 common 下的 js 文件
+         * 2. request 的是 common 下存在子级的 js 文件
+         *
+         * 否则使用 alias 中的配置
+         */
+
+        if (request.indexOf('common') === 0 && path.dirname(request) !== 'common') {
+          return cb(null, `window.${wpExternalModuleName}.${transPath2Variable(request)}`);
+        }
+
+        cb();
+      }
     ]
   },
+  // gulp-rev-replace 资源替换
   revReplace: {
-    base: srcPath
+    base: srcPath,
+    prefix: path.join('/React', path.relative(cwd, destPath), '/'),
+    modifyReved(reved) {
+      // 静态资源后缀，会自动为 img、css、js 等资源添加后缀
+      return isDev ? reved : `${reved}?max_age=31536000`;
+    }
+  },
+  // named 参数
+  named(file) {
+    const extname = path.extname(file.path);
+
+    if (~file.path.indexOf(`.${wpExternalModuleName}`)) {// 将 .${wpExternalModuleName} 下的文件打包输出
+      return path.join(
+        path.relative(srcPath, path.join(commonPath, 'js')),
+        path.basename(file.path.split(`.${wpExternalModuleName}/`)[1].replace(new RegExp(`${extname}$`, 'i'), ''))
+      );
+    }
+
+    return path.relative(srcPath, file.path).replace(new RegExp(`${extname}$`, 'i'), '');
+  },
+  // gulp-sass 参数
+  sass: {
+    includePaths: [srcPath],
+    outputStyle: isDev ? 'expanded' : 'compressed'
+  },
+  // postcss-sprites 参数
+  sprites: {
+    basePath: srcPath,
+    // 合并后的雪碧图存放的地址
+    spritePath: spritePath,
+    // 生成雪碧图后的样式表的存放地址
+    stylesheetPath: null, // path.join(destPath, '**', '*.css'),
+    spritesmith: {padding: 4},
+    filterBy: (image) => {
+      if (!~image.path.indexOf(slicePath)) {
+        return Promise.reject();
+      }
+      return Promise.resolve();
+    },
+    // 将图片分组，可以实现按照文件夹生成雪碧图
+    groupBy: (image) => {
+      let groupName = (path.dirname(image.path).replace(`${slicePath}`, '').replace(/(^\/|\/$)/, '') || 'uncredited').split('/');
+
+      return Promise.resolve(groupName.join('.'));
+    }
+  },
+  // postcss-assets 参数
+  assets: {
+    // 图片搜索路径
+    loadPaths: [path.join(destPath, '**'), path.join(srcPath, '**')],
+    // 图片路径是否使用相对于 css 文件的路径
+    relative: true
   }
 };

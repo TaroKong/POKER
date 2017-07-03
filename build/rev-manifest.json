@@ -1,4 +1,7 @@
 {
   "page/test/main.entry.js": "page/test/main-039f7488b3.entry.js",
-  "page/test2/main.entry.js": "page/test2/main-c0e5fcbd09.entry.js"
+  "page/test2/index.css": "page/test2/index-9384b7c8d4.css",
+  "page/test2/index2.css": "page/test2/index2-a5bb7d352f.css",
+  "page/test2/index3.css": "page/test2/index3-015bc912b7.css",
+  "page/test2/main.entry.js": "page/test2/main-a8f51a92d9.entry.js"
 }

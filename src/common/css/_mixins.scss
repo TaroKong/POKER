@@ -1,0 +1,331 @@
+%clearfix {
+  &:before,
+  &:after {
+    content: '';
+    display: table;
+    font: 0/0 a;
+  }
+  &:after {
+    clear: both;
+  }
+}
+
+%text-overflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  word-wrap: normal;
+}
+
+%word-break {
+  word-break: break-all;
+  word-wrap: break-word;
+  white-space: normal;
+}
+
+%hide-text {
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+
+%no-wrap {
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  word-wrap: normal;
+}
+
+%inline-block-top {
+  display: inline-block;
+  vertical-align: top;
+}
+
+// line overflow
+@mixin line-overflow($line) {
+  white-space: normal;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: $line;
+  /* number of lines to show */
+  -webkit-box-orient: vertical;
+}
+
+// font face
+@mixin font-face($fontFamily, $fileName, $style: normal, $weight: normal) {
+  @font-face {
+    font-family: $fontFamily;
+    font-style: $style;
+    font-weight: $weight;
+    src:url('../font/#{$fileName}.eot');
+    src:local('#{$fontFamily}'),
+    url('../font/#{$fileName}.eot?#iefix') format('embedded-opentype'),
+    url('../font/#{$fileName}.woff') format('woff'),
+    url('../font/#{$fileName}.ttf') format('truetype'),
+    url('../font/#{$fileName}.svg##{$fontFamily}') format('svg'),
+    url('../font/#{$fileName}.otf') format('opentype');
+  }
+}
+
+// drop shadow
+@mixin drop-shadow($horizontal: 0, $vertical: 1px, $blur: 2px, $alpha: 0.1) {
+  box-shadow: $horizontal $vertical $blur rgba(0, 0, 0, $alpha);
+}
+
+// opacity
+@mixin opacity($opacity) {
+  opacity: $opacity;
+  filter: alpha(opacity=$opacity * 100);
+  -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(opacity=#{$opacity * 100})";
+}
+
+// sprite
+@mixin sprite($img) {
+  background-image: url('/'+ $img);
+  background-repeat: no-repeat;
+}
+
+// base64
+@mixin base64($img) {
+  background-image: inline($img);
+  background-repeat: no-repeat;
+}
+
+// 单图引用
+@mixin pic($img) {
+  background:resolve($img) no-repeat;
+}
+
+// border
+@mixin border($direction: all,
+$size: 1px,
+$style: solid,
+$color: $BORDERCOLOR) {
+  @if $direction==all {
+    border: $size $style $color;
+  }
+  @else if $direction==top {
+    border-top: $size $style $color;
+  }
+  @else if $direction==right {
+    border-right: $size $style $color;
+  }
+  @else if $direction==bottom {
+    border-bottom: $size $style $color;
+  }
+  @else if $direction==left {
+    border-left: $size $style $color;
+  }
+}
+
+// triangle
+@mixin triangle($direction,
+$size,
+$borderColor: $BORDERCOLOR) {
+  content: "";
+  height: 0;
+  width: 0;
+  @if $direction==top {
+    border-bottom: $size solid $borderColor;
+    border-left: $size dashed transparent;
+    border-right: $size dashed transparent;
+  }
+  @else if $direction==right {
+    border-left: $size solid $borderColor;
+    border-top: $size dashed transparent;
+    border-bottom: $size dashed transparent;
+  }
+  @else if $direction==bottom {
+    border-top: $size solid $borderColor;
+    border-left: $size dashed transparent;
+    border-right: $size dashed transparent;
+  }
+  @else if $direction==left {
+    border-right: $size solid $borderColor;
+    border-top: $size dashed transparent;
+    border-bottom: $size dashed transparent;
+  }
+}
+
+// arrow
+@mixin arrow($direction: top,
+$size: 5px,
+$borderColor: $BORDERCOLOR,
+$color: #fff,
+$width: 2px) {
+  height: 0;
+  width: 0;
+  border-radius: 3px;
+  &:after {
+    position: absolute;
+    content: '';
+    width: 0;
+    height: 0;
+    border-radius: 3px;
+  }
+  @if $direction==top {
+    border-bottom: $size solid $borderColor;
+    border-left: $size dashed transparent;
+    border-right: $size dashed transparent;
+    &:after {
+      left: -$size;
+      top: $width;
+      border-bottom: $size solid $color;
+      border-left: $size dashed transparent;
+      border-right: $size dashed transparent;
+    }
+  }
+  @else if $direction==right {
+    border-left: $size solid $borderColor;
+    border-top: $size dashed transparent;
+    border-bottom: $size dashed transparent;
+    &:after {
+      right: $width;
+      top: -$size;
+      border-left: $size solid $color;
+      border-top: $size dashed transparent;
+      border-bottom: $size dashed transparent;
+    }
+  }
+  @else if $direction==bottom {
+    border-top: $size solid $borderColor;
+    border-left: $size dashed transparent;
+    border-right: $size dashed transparent;
+    &:after {
+      left: -$size;
+      bottom: $width;
+      border-top: $size solid $color;
+      border-left: $size dashed transparent;
+      border-right: $size dashed transparent;
+    }
+  }
+  @else if $direction==left {
+    border-right: $size solid $borderColor;
+    border-top: $size dashed transparent;
+    border-bottom: $size dashed transparent;
+    &:after {
+      left: $width;
+      top: -$size;
+      border-right: $size solid $color;
+      border-top: $size dashed transparent;
+      border-bottom: $size dashed transparent;
+    }
+  }
+}
+
+// border-width-dpr
+@mixin border-width-dpr($width){
+  border-width:$width;
+  [data-dpr="2"] & {
+    border-width:$width * 2;
+  }
+  [data-dpr="3"] & {
+    border-width:$width * 3;
+  }
+}
+// border-radius-dpr
+@mixin border-radius-dpr($radius){
+  border-radius:$radius;
+  [data-dpr="2"] & {
+    border-radius:$radius * 2;
+  }
+  [data-dpr="3"] & {
+    border-radius:$radius * 3;
+  }
+}
+
+@mixin pseudo-border($direction: top, $size: 1px, $color: #000){
+  @if $direction == top {
+    &:before {
+      position: absolute;
+      content: "";
+      width: 100%;
+      height: 0;
+      left: 0;
+      top: 0;
+      border-top: $size solid $color;
+      transform: scale(1,.5);
+      transform-origin: center top;
+    }
+  }
+  @else if $direction == bottom {
+    &:after {
+      position: absolute;
+      content: "";
+      width: 100%;
+      height: 0;
+      left: 0;
+      bottom: 0;
+      border-bottom: $size solid $color;
+      transform: scale(1,.5);
+      transform-origin: center bottom;
+    }
+  }
+  @else if $direction == right {
+    &:after {
+      position: absolute;
+      content: "";
+      height: 100%;
+      width: 0;
+      right: 0;
+      top: 0;
+      border-right: $size solid $color;
+      transform: scale(.5,1);
+      transform-origin: center right;
+    }
+  }
+  @else if $direction == left {
+    &:after {
+      position: absolute;
+      content: "";
+      height: 100%;
+      width: 0;
+      left: 0;
+      top: 0;
+      border-left: $size solid $color;
+      transform: scale(.5,1);
+      transform-origin: center left;
+    }
+  }
+}
+
+//内联SVG函数
+@function str-replace($string, $search, $replace: '') {
+    $index: str-index($string, $search);
+    @if $index {
+        @return str-slice($string, 1, $index - 1) + $replace +
+        str-replace(str-slice($string, $index +
+        str-length($search)), $search, $replace);
+    }
+    @return $string;
+}
+@function svg-url($svg){
+    $encoded:'';
+    $slice: 2000;
+    $index: 0;
+    $loops: ceil(str-length($svg)/$slice);
+    @for $i from 1 through $loops {
+        $chunk: str-slice($svg, $index, $index + $slice - 1);
+        $chunk: str-replace($chunk,'"','\'');
+        $chunk: str-replace($chunk,'<','%3C');
+        $chunk: str-replace($chunk,'>','%3E');
+        $chunk: str-replace($chunk,'&','%26');
+        $chunk: str-replace($chunk,'#','%23');
+        $chunk: str-replace($chunk,' ','%20');//空格
+        $encoded: #{$encoded}#{$chunk};
+        $index: $index + $slice;
+    }
+    @return url("data:image/svg+xml;charset=utf8,#{$encoded}");
+}
+
+@function svg-rectangle($color: #1cbcb4, $radius: '2', $strokeWidth: '1', $width: '100%', $height: '100%') {
+    @return svg-url('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><defs><clipPath id="clip"><rect rx="#{$radius}" ry="#{$radius}" width="100%" height="100%"/></clipPath></defs><rect width="100%" height="100%" rx="#{$radius}" ry="#{$radius}" fill="none" stroke="#{$color}" stroke-width="#{$strokeWidth}" clip-path="url(#clip)"/></svg>');
+}
+
+@function svg-line($color: #ccc, $width: '100%', $height: '0.5', $y: '0') {
+    @return svg-url('<svg xmlns="http://www.w3.org/2000/svg"><rect y="#{$y}" width="#{$width}" height="#{$height}" fill="#{$color}"/></svg>');
+}

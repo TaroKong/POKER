@@ -48,20 +48,12 @@ const preRevReplace = () => {
   });
 };
 
-const runHtml = (isBuild = false) => {
-  return gulp.src(path.join(config.srcPath, '**/*.html'))
-    .pipe(preRevReplace())
-    .pipe(revReplace(Object.assign({
-      manifest: gulp.src(config.manifest.path),
-      replaceInExtensions: ['.html']
-    }, config.revReplace)))
-    .pipe(gulp.dest(config.destPath));
-};
-
-gulp.task('html:build', () => {
-  return runHtml(true);
-});
-
 gulp.task('html', () => {
-  return runHtml();
+  return gulp.src(path.join(config.filePath, '**/*.html'), config.gulpSrc)
+    // .pipe(preRevReplace())
+    // .pipe(revReplace(Object.assign({
+    //   manifest: gulp.src(config.manifest.path),
+    //   replaceInExtensions: ['.html']
+    // }, config.revReplace)))
+    .pipe(gulp.dest(config.destPath));
 });
