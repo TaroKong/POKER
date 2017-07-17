@@ -4,8 +4,7 @@
 let React = require('react');
 let ReactDOM = require('react-dom');
 
-console.log('hahahs');
-console.log('dddd');
+alert(23432);
 
 document.getElementById('remove').onclick = (e) => {
   ReactDOM.unmountComponentAtNode(document.getElementById("tick"));

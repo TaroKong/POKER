@@ -139,7 +139,11 @@ p {
   background: url('/slice/test2/index/img.png') no-repeat 0 0;
 }
 p {
-  background: url('/slice/test2/index/index2/img.png') no-repeat 0 0;
+  @include sprite('slice/test2/index/index2/img.png');
+}
+
+p.cur {
+  background: url('/slice/test2/index/index2/img1.png') no-repeat 0 0;
 }
 p {
   background: url('/slice/test2/index/index2/index3/img.png') no-repeat 0 0;

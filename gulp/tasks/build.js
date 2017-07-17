@@ -5,11 +5,5 @@ const gulp = require('gulp');
 const runSequence = require('run-sequence');
 
 gulp.task('build', (cb) => {
-  runSequence(
-    'webpack:build',
-    'styles:build',
-    // ['sprites:build'],
-    'html',
-    cb
-  );
+  runSequence('production:build', cb);
 });

@@ -1,7 +1,16 @@
 {
-  "page/test/main.entry.js": "page/test/main-039f7488b3.entry.js",
-  "page/test2/index.css": "page/test2/index-9384b7c8d4.css",
+  "common/css/g.css": "common/css/g-0a6f742369.css",
+  "common/js/base.js": "common/js/base-9eade3cc4e.js",
+  "common/js/echarts.simple.min.js": "common/js/echarts-ecdeb6c8d7.simple.min.js",
+  "common/js/fx.min.js": "common/js/fx-3e58a06321.min.js",
+  "common/js/hammer.min.js": "common/js/hammer-1506598149.min.js",
+  "common/js/zepto.min.js": "common/js/zepto-a685f0d603.min.js",
+  "page/test/main.entry.js": "page/test/main-b7c7cc9a44.entry.js",
+  "page/test2/img/img.png": "page/test2/img/img-0ed3dcba1a.png",
+  "page/test2/index.css": "page/test2/index-1bb7a08774.css",
   "page/test2/index2.css": "page/test2/index2-a5bb7d352f.css",
   "page/test2/index3.css": "page/test2/index3-015bc912b7.css",
-  "page/test2/main.entry.js": "page/test2/main-a8f51a92d9.entry.js"
+  "page/test2/main.entry.js": "page/test2/main-721c0dae81.entry.js",
+  "page/test3/main.entry.js": "page/test3/main-39005883b6.entry.js",
+  "sprites/sprite.test2.png": "sprites/sprite-639870aac6.test2.png"
 }

@@ -15,7 +15,7 @@ const named = require('vinyl-named');
 const del = require('del');
 const config = require('../../config');
 
-const runWebpack = () => {
+gulp.task('webpack', () => {
   const jsFilter = filter(['**/*.js?(x)', '!**/common/js/*.js?(x)'], {restore: true, dot: true});
   const commonFilter = filter('**/common/js/**/*.js?(x)', {restore: true});
   // 不需要打包的文件，如：common/js/*.js?(x) 文件，这部分文件应直接在 html 中使用 script 引入
@@ -32,12 +32,20 @@ const runWebpack = () => {
     }
   }
 
-  // 删除在 config.exteralModuleOperator 中临时产生的文件
-  const delTmpJsFiles = () => {
-    del.sync(path.join(config.commonPath, `js/**/.${config.wpExternalModuleName}*/**`));
-  };
+  const wpExternalModule = path.join(config.commonPath, `js/**/.${config.wpExternalModuleName}*/**`);
 
-  delTmpJsFiles();
+  // 不打包在 config.exteralModuleOperator 中临时产生的文件
+  src.push(`!${wpExternalModule}`);
+
+  // 记录要删除的文件：删除在 config.exteralModuleOperator 中临时产生的文件
+  config.delete.push(wpExternalModule);
+
+  // 删除在 config.exteralModuleOperator 中临时产生的文件
+  // const delTmpJsFiles = () => {
+  //   del.sync(path.join(config.commonPath, `js/**/.${config.wpExternalModuleName}*/**`));
+  // };
+  //
+  // delTmpJsFiles();
 
   return gulp.src(src, Object.assign({dot: true}, config.gulpSrc))
     .pipe(commonFilter)
@@ -45,7 +53,7 @@ const runWebpack = () => {
     .pipe(gulp.dest(config.srcPath))
     .pipe(commonFilter.restore)
     .pipe(noWBFilter)
-    .pipe(gulp.dest(config.destPath))
+    .pipe(gulp.dest(config.gulpDest()))
     .pipe(noWBFilter.restore)
     .pipe(jsFilter)
     .pipe(named(config.named))
@@ -56,17 +64,9 @@ const runWebpack = () => {
     // .pipe(jsFilter.restore)
     // .pipe(gulpIf(isBuild, gulp.dest(config.destPath)))
     // .pipe(rev.manifest(config.manifest))
-    .pipe(gulp.dest(config.destPath))
-    .on('finish', () => {
-      delTmpJsFiles();
-    });
-};
-
-gulp.task('webpack:build', () => {
-  return runWebpack();
-});
-
-gulp.task('webpack', () => {
-  return runWebpack();
+    .pipe(gulp.dest(config.gulpDest()))
+    /*.on('finish', () => {
+     delTmpJsFiles();
+     })*/;
 });
 

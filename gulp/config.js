@@ -20,7 +20,9 @@ let commonPath = path.join(srcPath, 'common');
 let destFilePath = path.join(destPath, path.relative(srcPath, filePath));
 let slicePath = path.join(srcPath, 'slice');
 let spritePath = path.join(destPath, 'sprites');
+let imageExt = ['.jpg', '.png', '.gif'];
 let manifestPath = path.join(destPath, 'rev-manifest.json');
+let manifestList = [];
 const wpExternalModuleName = 'externalModules';
 
 const getCommonNamed = (filePath) => {
@@ -44,12 +46,40 @@ module.exports = {
   destFilePath,
   commonPath,
   wpExternalModuleName,
+  imageExt,
   // gulp.src 参数
   gulpSrc: {
     base: srcPath
   },
+  gulpDest(taskName = '') {
+    return (file) => {
+      let _destPath = '';
+      const _path = path.resolve(destPath, file.relative);
+
+      switch (taskName) {
+        case 'images':
+          if (~imageExt.indexOf(path.extname(file.relative))) {
+            manifestList.push(_path);
+          }
+          break;
+        case 'template':
+          _destPath = path.join(destPath, 'template');
+          break;
+        default:
+          if (!~['.map'].indexOf(path.extname(file.relative)) && !~manifestList.indexOf(_path)) {
+            manifestList.push(_path);
+          }
+          break;
+      }
+
+      return _destPath || destPath;
+    };
+  },
+  // 将要被删除的文件列表
+  delete: [],
   // gulp-rev 参数
   manifest: {
+    list: manifestList,
     path: manifestPath,
     base: destPath,
     merge: true,
@@ -184,8 +214,8 @@ module.exports = {
   },
   // gulp-rev-replace 资源替换
   revReplace: {
-    base: srcPath,
-    prefix: path.join('/React', path.relative(cwd, destPath), '/'),
+    base: destPath,
+    prefix: path.join('/POKER', path.relative(cwd, destPath), '/'),
     modifyReved(reved) {
       // 静态资源后缀，会自动为 img、css、js 等资源添加后缀
       return isDev ? reved : `${reved}?max_age=31536000`;
@@ -225,9 +255,23 @@ module.exports = {
     },
     // 将图片分组，可以实现按照文件夹生成雪碧图
     groupBy: (image) => {
-      let groupName = (path.dirname(image.path).replace(`${slicePath}`, '').replace(/(^\/|\/$)/, '') || 'uncredited').split('/');
+      // console.log(image);
+      let groupName = (path.dirname(image.styleFilePath).replace(`${path.join(destPath, 'page')}`, '').replace(/(^\/|\/$)/, '') || 'uncredited').split('/');
+
+      if (~image.styleFilePath.indexOf(path.join(destPath, 'common'))) {
+        groupName = ['common'];
+      }
 
       return Promise.resolve(groupName.join('.'));
+    },
+    hooks: {
+      onSaveSpritesheet(opts, {groups, extension}) {
+        const _path = path.join(opts.spritePath, ['sprite', ...groups, extension].join('.'));
+
+        manifestList.push(_path);
+
+        return _path;
+      }
     }
   },
   // postcss-assets 参数

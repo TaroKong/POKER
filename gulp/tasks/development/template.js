@@ -48,12 +48,12 @@ const preRevReplace = () => {
   });
 };
 
-gulp.task('html', () => {
-  return gulp.src(path.join(config.filePath, '**/*.html'), config.gulpSrc)
+gulp.task('template', () => {
+  return gulp.src(path.join(config.filePath, '**/*.html'), {base: path.join(config.srcPath, 'page')})
     // .pipe(preRevReplace())
     // .pipe(revReplace(Object.assign({
     //   manifest: gulp.src(config.manifest.path),
     //   replaceInExtensions: ['.html']
     // }, config.revReplace)))
-    .pipe(gulp.dest(config.destPath));
+    .pipe(gulp.dest(config.gulpDest('template')));
 });
