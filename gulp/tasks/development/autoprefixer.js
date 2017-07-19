@@ -1,19 +1,19 @@
 /**
- * Created by tarojiang on 2017/6/19.
+ * Created by tarojiang on 2017/7/18.
  */
 const gulp = require('gulp');
 const path = require('path');
-const through = require('through2');
 const postcss = require('gulp-postcss');
-const sprites = require('postcss-sprites');
+const autoprefixer = require('autoprefixer');
 const config = require('../../config');
 
-gulp.task('development:sprites', () => {
+gulp.task('autoprefixer', () => {
   const processors = [
-    sprites(config.sprites)
+    autoprefixer(config.autoprefixer)
   ];
 
   return gulp.src(path.join(config.destFilePath, '**/*.css'), {base: config.destPath})
     .pipe(postcss(processors))
     .pipe(gulp.dest(config.destPath));
 });
+

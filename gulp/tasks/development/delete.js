@@ -5,10 +5,6 @@ const gulp = require('gulp');
 const del = require('del');
 const config = require('../../config');
 
-gulp.task('delete:pre', (cb) => {
-
-});
-
 gulp.task('delete', (cb) => {
   return del(config.delete);
 });

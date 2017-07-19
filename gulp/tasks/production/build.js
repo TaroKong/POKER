@@ -8,10 +8,11 @@ gulp.task('production:build', (cb) => {
   runSequence(
     'webpack',
     ['styles', 'images'],
-    'sprites',
+    ['development:sprites', 'autoprefixer'],
     'assets',
+    'production:cssnano',
     'production:manifest',
-    'template',
+    ['production:sprites', 'production:template'],
     'delete',
     cb
   );

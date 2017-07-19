@@ -13,6 +13,7 @@ const argv = yargs.argv;
 const ENV = ~['dev', 'test', 'build'].indexOf(argv._[0]) ? argv._[0] : 'dev';
 const [isDev, isTest, isBuild] = ['dev' === ENV, 'test' === ENV, 'build' === ENV];
 
+// 一些配置项
 let srcPath = path.join(cwd, 'src');
 let destPath = path.join(cwd, ENV);
 let filePath = argv.file ? path.join(cwd, argv.file) : srcPath;
@@ -23,6 +24,8 @@ let spritePath = path.join(destPath, 'sprites');
 let imageExt = ['.jpg', '.png', '.gif'];
 let manifestPath = path.join(destPath, 'rev-manifest.json');
 let manifestList = [];
+const revPrefix = path.join('/POKER', path.relative(cwd, destPath), '/');
+const revSuffix = '?max_age=31536000';
 const wpExternalModuleName = 'externalModules';
 
 const getCommonNamed = (filePath) => {
@@ -165,13 +168,22 @@ module.exports = {
       rules: [
         {
           test: /\.jsx?$/,
-          exclude: /(node_modules)/,
-          use: {
+          include: srcPath,
+          enforce: 'pre',
+          use: [{
+            loader: 'eslint-loader'
+          }]
+        },
+        {
+          test: /\.jsx?$/,
+          include: srcPath,
+          // exclude: /(node_modules)/,
+          use: [{
             loader: 'babel-loader',
             options: {
               presets: ['es2015', 'stage-0', 'react']
             }
-          }
+          }]
         }
       ]
     },
@@ -215,10 +227,10 @@ module.exports = {
   // gulp-rev-replace 资源替换
   revReplace: {
     base: destPath,
-    prefix: path.join('/POKER', path.relative(cwd, destPath), '/'),
+    prefix: revPrefix,
     modifyReved(reved) {
       // 静态资源后缀，会自动为 img、css、js 等资源添加后缀
-      return isDev ? reved : `${reved}?max_age=31536000`;
+      return isDev ? reved : `${reved}${revSuffix}`;
     }
   },
   // named 参数
@@ -237,7 +249,7 @@ module.exports = {
   // gulp-sass 参数
   sass: {
     includePaths: [srcPath],
-    outputStyle: isDev ? 'expanded' : 'compressed'
+    outputStyle: 'expanded' // isDev ? 'expanded' : 'compressed'
   },
   // postcss-sprites 参数
   sprites: {
@@ -280,5 +292,53 @@ module.exports = {
     loadPaths: [path.join(destPath, '**'), path.join(srcPath, '**')],
     // 图片路径是否使用相对于 css 文件的路径
     relative: true
+  },
+  preRevReplace() {
+    let cache = [];
+
+    return through.obj(function (file, enc, cb) {
+      if (file.isNull()) {
+        this.push(file);
+      } else {
+        cache.push(file);
+      }
+
+      cb();
+    }, function (cb) {
+      const stream = this;
+      let revManifest = {};
+      try {
+        revManifest = require(manifestPath);
+      } catch (e) {}
+
+      cache.forEach((file) => {
+        let contents = file.contents.toString().replace(/(src|href|url)[=\(]([\'\"]?)([\w\-\.\/\\]+)\2\)?/ig, (w, w1, w2, w3) => {
+          w3 = w3.replace('\\', '/');
+
+          let _path = path.relative(~file.path.indexOf(srcPath) ? srcPath : destPath, path.dirname(file.path));
+
+          _path = path.join(_path, w3);
+
+          if (!revManifest[_path]) {
+            _path = w3;
+          }
+
+          return `${w1}${w1 == 'url' ? '(' : '='}${w2}${_path}${w2}${w1 == 'url' ? ')' : ''}`;
+        });
+
+        file.contents = new Buffer(contents);
+
+        stream.push(file);
+      });
+
+      cb();
+    });
+  },
+  cssnano: {
+    zindex: false,
+    autoprefixer: false
+  },
+  autoprefixer: {
+    browsers: ['> 5%', 'ie >= 8']
   }
 };
