@@ -4,10 +4,8 @@
 let React = require('react');
 let ReactDOM = require('react-dom');
 
-alert(23432);
-
 document.getElementById('remove').onclick = (e) => {
-  ReactDOM.unmountComponentAtNode(document.getElementById("tick"));
+  ReactDOM.unmountComponentAtNode(document.getElementById('tick'));
 };
 
 let AppComponent = require('./components/productBox.js');
@@ -44,7 +42,7 @@ class Clock extends React.Component {
 
   render() {
     return (
-      <div id="tick_wraper">
+      <div id='tick_wraper'>
         <h1>Hello, {this.state.name}!</h1>
         <h2>It is {this.state.date.toLocaleTimeString()}.</h2>
       </div>
@@ -53,7 +51,7 @@ class Clock extends React.Component {
 }
 
 ReactDOM.render(
-  <Clock name="tarojiang"/>,
+  <Clock name='tarojiang'/>,
   document.getElementById('tick')
 );
 
@@ -89,7 +87,7 @@ function WarningBanner(props) {
   }
 
   return (
-    <div className="warning">
+    <div className='warning'>
       Warning!
     </div>
   );
@@ -98,7 +96,7 @@ function WarningBanner(props) {
 class Page extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {showWarning: true}
+    this.state = {showWarning: true};
     this.handleToggleClick = this.handleToggleClick.bind(this);
   }
 
@@ -145,6 +143,7 @@ class NameForm extends React.Component {
 
   handleSubmit(event) {
     alert('A name was submitted: ' + this.state.value);
+
     event.preventDefault();
   }
 
@@ -153,9 +152,9 @@ class NameForm extends React.Component {
       <form onSubmit={this.handleSubmit}>
         <label>
           Name:
-          <input type="text" value={this.state.value} onChange={this.handleChange} />
+          <input type='text' value={this.state.value} onChange={this.handleChange} />
         </label>
-        <input type="submit" value="Submit" />
+        <input type='submit' value='Submit' />
       </form>
     );
   }

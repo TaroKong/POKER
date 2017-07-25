@@ -1,3 +1,25 @@
 {
-  "extends": "standard"
+  "extends": "standard",
+  "env": {
+    "browser": true
+  },
+  "globals": {
+    "$": true,
+    "top": true,
+    "location": true
+  },
+  "plugins": [
+    "react"
+  ],
+  "rules": {
+    "semi": [2, "always"],
+    "space-before-function-paren": [2, {
+      "anonymous": "always",
+      "named": "never",
+      "asyncArrow": "ignore"
+    }],
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "no-alert": 0
+  }
 }

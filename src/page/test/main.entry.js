@@ -6,6 +6,7 @@
 
 let jquery = require('jquery');
 
+console.log(jquery);
 // document.getElementById('remove').onclick = (e) => {
 //   ReactDOM.unmountComponentAtNode(document.getElementById("tick"));
 // };

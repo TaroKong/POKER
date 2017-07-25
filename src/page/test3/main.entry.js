@@ -6,4 +6,3 @@ import constants from 'common/base/constants';
 
 console.log(num, util);
 console.log(constants);
-

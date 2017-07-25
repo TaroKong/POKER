@@ -249,7 +249,7 @@ module.exports = {
   // gulp-sass 参数
   sass: {
     includePaths: [srcPath],
-    outputStyle: 'expanded' // isDev ? 'expanded' : 'compressed'
+    // outputStyle: 'expanded' // isDev ? 'expanded' : 'compressed'
   },
   // postcss-sprites 参数
   sprites: {
@@ -309,7 +309,8 @@ module.exports = {
       let revManifest = {};
       try {
         revManifest = require(manifestPath);
-      } catch (e) {}
+      } catch (e) {
+      }
 
       cache.forEach((file) => {
         let contents = file.contents.toString().replace(/(src|href|url)[=\(]([\'\"]?)([\w\-\.\/\\]+)\2\)?/ig, (w, w1, w2, w3) => {

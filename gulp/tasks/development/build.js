@@ -6,14 +6,16 @@ const runSequence = require('run-sequence');
 
 gulp.task('development:build', (cb) => {
   runSequence(
+    'delete:pre',
     'webpack',
     ['styles', 'images'],
-    ['development:sprites', 'autoprefixer'],
+    'development:sprites',
+    'autoprefixer',
     'assets',
-    'development:cssnano',
+    // 'development:cssnano',
     'development:manifest',
     'production:template',
-    'delete',
+    'delete:post',
     cb
   );
 });
